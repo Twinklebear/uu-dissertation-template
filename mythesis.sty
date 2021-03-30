@@ -1,0 +1,21 @@
+%%% -*-LaTeX-*-
+%%% This is mythesis.sty.
+%%% Put your own private macro definitions, and style modifications, here.
+%%%
+%%% However, avoid introducing shorthands for standard LaTeX markup,
+%%% such as \beq and \eeq for \begin{equation} and \end{equation},
+%%% because it makes your input unreadable to others, and publishers
+%%% may reject your LaTeX files because nonstandard markup interferes
+%%% with their large-volume production practices.
+
+\newcommand {\mainindex}   [1] {\index{#1|mainpage}}
+\newcommand {\mainpage}    [1] {\textbf{#1}}
+
+%%% We need a hidden keyword in each index entry to allow extraction
+%%% of entries for specialized indexes
+\newcommand {\bioname} [1] {\emph {#1}\index{#1@\emph {#1}\gobblearg{bioname}}}
+
+\definecoloralias {fsfcolor} {forestgreen}
+
+\newcommand {\fsfname} [1] {\texttt {#1}\index{#1@\texttt {#1}\gobblearg{fsfname}}}
+

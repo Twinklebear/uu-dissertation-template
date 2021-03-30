@@ -1,0 +1,26 @@
+
+% /usr/local/lib/tex/latex/tgrind.sty, Wed Jul  7 10:12:11 1993
+% Edit by Nelson H. F. Beebe <beebe@plot79.math.utah.edu>
+%
+% This simple LaTeX style file allows .tex files produced by the
+% tgrind(1) utility to be included in LaTeX documents by the command
+% \tgrind{filename}.  The output from this command will always fill
+% complete pages.
+
+\immediate\write16{tgrind version 1.00 <07 July 1993>}
+%
+% tgrindmac.tex uses three Plain TeX macros that are not used in
+% LaTeX, and uses \pageno which has another name in LaTeX.
+%
+\def \headline#1{}
+\def \footline#1{}
+\countdef \pageno = \count0
+\let \folio = \relax
+%
+% Here is what the user needs to display a TeX file from tgrind: We
+% redefine \end to be a no-op so that the file need not be modified in
+% any way.
+%
+\def \tgrind #1{{\let \end = \relax \input{#1}}}
+%
+\endinput

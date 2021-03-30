@@ -1,0 +1,21 @@
+% /usr/local/src/hoc/hoc-7.0.7.beta/doc/coloralias.sty, Thu Jun 24 14:07:18 2004
+% Edit by Nelson H. F. Beebe <beebe@math.utah.edu>
+
+\def \fileversion {0.00}%
+\def \filedate    {2004/06/25}%
+
+\NeedsTeXFormat{LaTeX2e}
+
+\ProvidesPackage{coloralias}%
+    [\filedate\space v\fileversion\space Support for colorname aliases]
+
+%%% Usage: \definecoloralias{newcolor}{existingcolor}
+\providecommand{\definecoloralias}[2]%
+{%
+    \@ifundefined{\string\color @#1}{}{\PackageInfo{hocbook}{Redefining color #1}}%
+    \expandafter \def \csname\string\color @#1\endcsname {\csname\string\color @#2\endcsname}%
+    \expandafter \def \csname name@#1\endcsname {#2}%
+}
+
+%%% Usage: \coloralias{newcolor} [expands to existingcolor]
+\providecommand{\coloralias}[1]{\csname name@#1\endcsname}%

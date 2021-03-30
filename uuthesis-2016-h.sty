@@ -1,0 +1,700 @@
+%%% -*-TeX-*-
+%%% ====================================================================
+%%% This file contains a small set of changes to the venerable
+%%% uuthesis support for LaTeX-2e to adjust page dimensions to the
+%%% typography of the 2016 University of Utah thesis guidelines,
+%%%
+%%% Usage (notice the CRITICAL package order!):
+%%%
+%%%    \documentclass {uuthesis2e}
+%%%    \usepackage    {pkg-1}           % public LaTeX package
+%%%    \usepackage    {pkg-2}           % public LaTeX package
+%%%    \usepackage    {pkg-3}           % public LaTeX package
+%%%    ...
+%%%    \usepackage    {pkg-n}           % public LaTeX package
+%%%
+%%%    \usepackage    {uuthesis-2016-h} % ALWAYS follows ALL other public packages
+%%%    \usepackage    {uuthesis-opt-1}  % optional uuthesis package
+%%%    \usepackage    {uuthesis-opt-2}  % optional uuthesis package
+%%%    \usepackage    {uuthesis-opt-n}  % optional uuthesis package
+%%%    % ... front matter macro assignments go here ...
+%%%    \begin {document}
+%%%
+%%% Revision history:
+%%%
+%%% [02-May-2016] -- Yet more tweaks, and advance version letter to h.
+%%%
+%%% [25-Apr-2016] -- More tweaks for final release, and advance version
+%%%                  letter from f to g.
+%%%
+%%% [04-Apr-2016] -- More tweaks for final release, and advance version
+%%%                  letter from e to f.
+%%%
+%%% [30-Mar-2016] -- Minor tweak and advance version letter from d to e.
+%%%
+%%% [24-Mar-2016] -- More documentation, and revision of package-ordering
+%%%                  instructions.  Restore needed non-stretchy list
+%%%                  structure in quote and quotation environments.
+%%%
+%%% [23-Mar-2016] -- Complete support for running page headers, but
+%%%                  move that code to the separate style file
+%%%                  uuthesis-pageheaders.sty so that its use is
+%%%                  always optional, albeit recommended for improved
+%%%                  human navigation in the thesis.
+%%%
+%%% [22-Mar-2016] -- More cleanup of macro layout, and removal of debug
+%%%                  statements.
+%%%
+%%% [18-Mar-2016] -- Revise handling of table of contents spacing.
+%%%
+%%% [17-Mar-2016] -- Further updates for 2016 specifications, done in
+%%%                  close collaboration with the University of Utah
+%%%                  Thesis Office.
+%%%
+%%%                  Adjust spacing on title page and on the copyright
+%%%                  page.
+%%%
+%%%                  Revise the production of the table of contents
+%%%                  to insert a \vspace{\uuthesis@chaptersectionspace}
+%%%                  before the first section of each chapter, pushing
+%%%                  the section list away from the chapter line.
+%%%
+%%%                  Adjust spacing on the optionalfront pages.
+%%%
+%%%                  Make the quote and quotation environments single
+%%%                  spaced.  Their definitions still need work, but
+%%%                  time has run out for a release of a new version of
+%%%                  this file in order to make Thesis Office deadlines.
+%%%
+%%%                  Rename all macros intended only for use within
+%%%                  this file with prefix uuthesis@ to avoid
+%%%                  collision with macros from user, and from other
+%%%                  packages.
+%%%
+%%%                  [STILL INCOMPLETE] Restore support for
+%%%                  \pagestyle{headings} so that pages have short
+%%%                  sectional titles as well as page numbers, making
+%%%                  navigation easier for humans.
+%%%
+%%%                  Add lots of block comments to document the changes!
+%%%
+%%% [22-Aug-2013] -- update for 2013 specifications on page 24 if
+%%%                  http://gradschool.utah.edu/thesis/wp-content/uploads/2013/08/2013-fall-handbook.pdf
+%%%
+%%% [25-Mar-2011] -- original version with tweaks for 2011 thesis
+%%%                  format changes
+%%%
+%%% ====================================================================
+
+\NeedsTeXFormat{LaTeX2e}[1994/12/01]
+\ProvidesPackage{uuthesis-2016-h}[2016/05/02 v1.08]
+
+\immediate \write16 {===============================================================================}%
+\immediate \write16 {}%
+\immediate \write16 {This is uuthesis-2016-h.sty version 1.08 <2 May 2016>}%
+\immediate \write16 {}%
+\immediate \write16 {===============================================================================}%
+
+%%% --------------------------------------------------------------------
+%%% Low-level TeX output tracing support
+\def \tracingon
+{%
+    %% Adapted from \tracingall in plain.tex:1223
+    \tracingonline	= 1
+    \tracingcommands	= 2
+    \tracingstats	= 2
+    \tracingpages	= 1
+    \tracingoutput	= 1
+    \tracinglostchars	= 1
+    \tracingmacros	= 2
+    \tracingparagraphs	= 1
+    \tracingrestores	= 1
+    % \showboxbreadth	= \maxdimen
+    % \showboxdepth	= \maxdimen
+    % \errorstopmode
+}%
+
+\def \tracingoff
+{%
+    %% The inverse of \tracingon
+    \tracingonline	= 0
+    \tracingcommands	= 0
+    \tracingstats	= 0
+    \tracingpages	= 0
+    \tracingoutput	= 0
+    \tracinglostchars	= 0
+    \tracingmacros	= 0
+    \tracingparagraphs	= 0
+    \tracingrestores	= 0
+    % \showboxbreadth	= \maxdimen
+    % \showboxdepth	= \maxdimen
+    % \errorstopmode
+}%
+
+%%% --------------------------------------------------------------------
+%%% New page dimensions for University of Utah theses and dissertations:
+
+%%% ====================================================================
+%%% The size11.clo and size12.clo files, and files indirectly included
+%%% by the graphicx package that most authors need, redefine list
+%%% environment parameters, reintroducing stretch that uuthesis2e.cls
+%%% took out.  Restore the definitions from the class file, and remove
+%%% all remaining stretchability!
+
+\leftmargini   = 2.5em
+\leftmarginii  = 2.2em     % > \labelsep + width of '(m)'
+\leftmarginiii = 1.87em    % > \labelsep + width of 'vii.'
+\leftmarginiv  = 1.7em     % > \labelsep + width of 'M.'
+\leftmarginv   = 1em       % is 1em a random value?
+\leftmarginvi  = 1em       % random value?
+
+\def \@listi
+{%
+    \leftmargin = \leftmargini
+}
+
+\def \@listii
+{%
+    \itemsep    = \parsep
+    \labelwidth = \leftmarginii
+    \leftmargin = \leftmarginii
+    \parsep     = 2.5pt
+    \topsep     = 5pt
+    \advance \labelwidth by -\labelsep
+}
+
+\def \@listiii
+{%
+    \itemsep    = \topsep
+    \labelwidth = \leftmarginiii
+    \leftmargin = \leftmarginiii
+    \parsep     = \z@
+    \partopsep  = 1pt
+    \topsep     = 2.5pt
+    \advance \labelwidth by -\labelsep
+}
+
+\def \@listiv
+{%
+    \labelwidth = \leftmarginiv
+    \leftmargin = \leftmarginiv
+    \advance \labelwidth by -\labelsep
+}
+
+\def \@listv
+{%
+    \labelwidth = \leftmarginv
+    \leftmargin = \leftmarginv
+    \advance \labelwidth by -\labelsep
+}
+
+\def \@listvi
+{%
+    \labelwidth = \leftmarginvi
+    \leftmargin = \leftmarginvi
+    \advance \labelwidth by -\labelsep
+}
+
+%%% --------------------------------------------------------------------
+%%% The 2016 Dissertation Approval page replaces the old committee
+%%% page that required signatures; for electronic documents, such
+%%% personal material must be strictly avoided.
+
+\usepackage{dissertationapproval}%
+
+%%% --------------------------------------------------------------------
+%%% We need a compact way to issue progress messages if the user
+%%% requested them:
+
+\def \uuthesis@noise #1%
+{%
+    \ifnoisy
+        \typeout{#1}%
+    \fi
+}%
+
+%%% --------------------------------------------------------------------
+%%% In the thesis cover title page, and also within quotation and quote
+%%% environments, we require the ability to force tighter interline
+%%% spacing than the default.  Because theses can be set in either 11pt
+%%% or 12pt font sizes, we adjust the spacing from the normal
+%%% size-dependent spacing saved in \normalbaselineskip.
+
+\def \uuthesis@smallsinglespace
+{%
+    \baselineskip = \normalbaselineskip
+    \advance \baselineskip by -1pt
+}%
+
+%%% --------------------------------------------------------------------
+%%% Fixed (point-size independent) sectional heading skips
+
+\def \HFsectionSKIP             {21pt}%
+\def \HFsubsectionSKIP          {21pt}%
+\def \HFsubsubsectionSKIP       {21pt}%
+\def \HFsubsubsubsectionSKIP    {21pt}%
+\def \fixchapterheading         {\vspace*{-24pt}}%
+\def \HFchapterSKIP             {11pt}%
+\def\textfloatsep {21pt}%
+
+\def \frontmatterformat
+{%
+    \pagestyle{plain}%
+    \pagenumbering{roman}%
+    % \global \c@page = -1
+    \setcounter{page}{-1}%
+    \parskip = 0pt
+}%
+
+%%% --------------------------------------------------------------------
+%%% The University of Utah Thesis Office wants different vertical
+%%% spacing in the table of contents (TOC), depending on whether there
+%%% are sections between successive chapter headings.  The extra space
+%%% comes between the chapter line and the first section that follows it,
+%%% but that space is omitted if the next thing is another chapter.
+%%% We revise the low-level sectioning commands to write a line
+%%% \vspace{\uuthesis@chaptersectionspace}
+%%% before the first section in each chapter
+\newdimen \uuthesis@chaptersectionspace
+\uuthesis@chaptersectionspace = \baselineskip
+\advance \uuthesis@chaptersectionspace by -6pt
+
+%%% --------------------------------------------------------------------
+%%% Ensure adequate vertical space between prose and page numbers:
+
+\footheight = 2em       % page foot is used by front matter page numbers
+\footskip   = 25pt
+\vfuzz      = 80pt      % suppress most overfll \vbox warnings
+
+%%% --------------------------------------------------------------------
+%%%
+\def \tableofcontents
+{%
+    \newpage
+    \thispagestyle{empty}%
+    \mainheading{CONTENTS}%
+    \par
+    \removelastskip
+    \singlespace
+    \par
+    \removelastskip% GBG Oct 1993
+    %% UofU Thesis Office wants spacing between CONTENTS and first line to
+    %% match that between LIST OF FIGURES (TABLES) and first line
+    %% and NOTATION AND SYMBOLS and first line
+    \vskip 7pt     %% TO DO: this needs to be a named parameter!
+    \@starttoc{toc}%
+    \uuthesis@noise{Contents.}%
+}%
+
+\def \thesisTOC #1{\nohyphenation \linepenalty=0 \uppercase{#1}}%
+
+\newif \ifuuthesis@needtocspace
+\uuthesis@needtocspacefalse
+
+\def \@chapter[#1]#2%
+{%
+    \typeout{DEBUG: @chapter: arg 1 = [#1]}%
+    \typeout{DEBUG: @chapter: arg 2 = [#2]}%
+    \cleardoublepage  % was \clearpage, but that messes up even/odd headers!
+    \thispagestyle{empty}%
+    \global \@topnum \z@
+    \if@oneappendix                         % Different treatment for one appendix
+        \uuthesis@noise{\@chapapp:}%
+        \refstepcounter{chapter}%
+        \addcontentsline{toc}{chapter}{\thesisTOC{\@chapapp: #1}\protect \global \protect \uuthesis@needtocspacetrue}%
+        \mainheading{\@chapapp}%
+    \else
+        \ifnum \c@secnumdepth >\m@ne\relax
+            \refstepcounter{chapter}%
+            % If chapter==1 or chapter==A, then TOC gets header
+            \edef \@tmp{\thechapter}%
+            %
+            % [25-Apr-2016] UofU Thesis office wants leaders
+	    % suppressed in CHAPTERS and APPENDICES lines in table of
+	    % contents: we supply that feature by setting the text in
+	    % a wide box
+            \ifx \@tmp \@optionA
+              % \addcontentsline{toc}{chapter}{\makebox[0.95\textwidth][l]{\textbf{APPENDICES}}}%
+              % NB: Magic constant -1.5em comes from book.cls:619 (definition of \l@chapter)
+	      % and -1.2ex upward adjustment comes from on-screen experimentation
+              \addtocontents{toc}{\leavevmode \\[-1.2ex] \kern -1.5em\protect \contentsline{}{\textbf{APPENDICES}}{}}%
+            \fi
+            %
+            \ifx \@tmp \@optionONE
+              % \addcontentsline{toc}{chapter}{\makebox[0.95\textwidth][l]{\textbf{CHAPTERS}}}%
+              % NB: Magic constant -1.5em comes from book.cls:619 (definition of \l@chapter)
+	      % and -1.2ex upward adjustment comes from on-screen experimentation
+              \addtocontents{toc}{\leavevmode \\[-1.2ex] \kern -1.5em\protect \contentsline{}{\textbf{CHAPTERS}}{}}%
+            \fi
+            %
+            \addcontentsline{toc}{chapter}{\protect\numberline{\thechapter.}\thesisTOC{#1}\protect \global \protect \uuthesis@needtocspacetrue}%
+        \else
+            \addcontentsline{toc}{chapter}{\thesisTOC{#1}\protect \global \protect \uuthesis@needtocspacetrue}%
+        \fi
+        \uuthesis@noise{\@chapapp\space\thechapter.}%
+        \mainheading{\@chapapp\space\thechapter}%
+    \fi
+    \mainheadingtext{\MakeUppercase #2}{\HFchapter\bfseries}% Text=boldface chapter header font
+    \vskip \HFchapterSKIP
+    \nobreak
+    \@afterheading
+    \global\@nobreakfalse
+}%
+
+\def \@Usect #1#2#3#4#5#6[#7]#8%
+{%
+    \testsize{#8}{#6}\@testsizetrue
+    \ifnum #2>\c@secnumdepth \relax
+        \def \@svsec {}%
+    \else
+        \refstepcounter{#1}%
+        \edef \@svsec {\csname the#1\endcsname \hskip 1em }%
+    \fi
+    \@tempskipa = #5\relax
+    % \tracingon
+    \ifdim \@tempskipa > \z@
+        \begingroup
+            #6\relax
+            \@hangfrom{\hskip #3\relax \@svsec}{\interlinepenalty \@M #8\par}%
+        \endgroup
+        \csname #1mark\endcsname{#7}%
+        \ifnum \c@tocdepth>\z@\relax
+            \ifnum \c@section = 1\relax
+                \addtocontents{toc}{\protect \ifuuthesis@needtocspace \vspace{\protect \uuthesis@chaptersectionspace} \protect \fi \protect \global \protect \uuthesis@needtocspacefalse}%
+            \fi
+            \addcontentsline{toc}{#1}%
+            {%
+                \ifnum #2>\c@secnumdepth
+                \else
+                    \protect \numberline{\csname the#1\endcsname}%
+                \fi
+                #7%
+            }%
+        \fi
+    \else
+        \def \@svsechd
+        {%
+            #6\hskip #3\relax  %% \relax added 2 May 90
+            \@svsec #8\csname #1mark\endcsname {#7}%
+            \ifnum \c@tocdepth>\z@ \relax
+                \ifnum \c@section=1
+                    \addtocontents{toc}{\protect \ifuuthesis@needtocspace \vspace{\protect \uuthesis@chaptersectionspace} \protect \fi \protect \global \protect \uuthesis@needtocspacefalse}%
+                \fi
+                 \addcontentsline{toc}{#1}%
+                 {%
+                    \ifnum #2>\c@secnumdepth
+                    \else
+                        \protect \numberline{\csname the#1\endcsname}%
+                    \fi
+                    #7%
+                }%
+            \fi
+        }%
+    \fi
+    % \tracingoff
+    \@xsect{#5}%
+}%
+
+\def \maintext%
+{%
+    \newpage
+    \normalspace
+    \pagestyle{myheadings}% new for 2016!
+    \markright{}%
+    \pagenumbering{arabic}%
+    \parskip = 0pt    % NB: University of Utah Thesis Office wants no glue between paragraphs
+}%
+
+% Fill number box and LEFT justify
+\def \uuthesis@uunumberline #1{\hbox to \@tempdima{#1\hfil}}%
+
+\def \l@figure     #1#2{\let \numberline \uuthesis@uunumberline \vskip 6pt \@dottedtocline{1}{0.0em}{3.3em}{#1}{#2}}%
+
+\let \l@table = \l@figure
+
+\def \uuthesis@figureheadskip   {\vskip 9pt}%
+
+\def \listoffigures
+{%
+    \iflistoffigures
+        \newpage
+        \thispagestyle{empty}%
+        \addcontentsline{toc}{chapter}{LIST OF FIGURES}%
+        \mainheading{LIST OF FIGURES}%
+        \uuthesis@figureheadskip
+        \uuthesis@noise{List of Figures.}%
+        \@starttoc{lof}%
+    \else
+        \uuthesis@noise{No list of figures.}%
+    \fi
+}%
+
+\def \listoftables
+{%
+  \iflistoftables
+    \newpage
+    \thispagestyle{empty}%
+    \addcontentsline{toc}{chapter}{LIST OF TABLES}%
+    \mainheading{LIST OF TABLES}%
+    \uuthesis@figureheadskip
+    \uuthesis@noise{List of Tables.}%
+    \@starttoc{lot}%
+  \else
+    \uuthesis@noise{No list of tables.}%
+  \fi
+}%
+
+\def \doublespace {\par \baselineskip = 21pt}%
+\def \singlespace {\par \baselineskip = 13.5pt}%
+\def \uuthesis@frontmattersmallskip {\par {\vskip 0.5\normalbaselineskip}}%
+
+\def \titlepage{%
+  \thispagestyle{empty}%
+  \noindent
+  \hspace{1em}%
+  \begin{minipage}[c]{\minilength}%
+    \begin{center}%
+      \vbox to 9\baselineskip
+      {%
+          \HFmainhead
+          \bfseries
+          \vss
+          \begin{center}%
+              \@title
+          \end{center}%
+          \vss
+      }%
+      \mbox{} \\
+    by
+      \uuthesis@frontmattersmallskip
+      \@author \\
+      \vbox to 15\baselineskip
+      {%
+        \vss
+        \uuthesis@smallsinglespace
+        A \@thesistype ~submitted to the faculty of\\
+        The University of Utah\\
+        in partial fulfillment of the requirements for the degree of
+        \vss
+      }%
+      {%  NB: the degree can be 1 or MORE lines long!
+          % \uuthesis@smallsinglespace
+          \doublespace
+          \@degree
+          \par
+      }%
+      \vskip 7\baselineskip
+      \expandafter{\@department}%
+      \uuthesis@frontmattersmallskip
+      The University of Utah
+      \uuthesis@frontmattersmallskip
+      \@submitdate%
+    \end{center}%
+  \end{minipage}%
+  \uuthesis@noise{Title.}%
+  \newpage    % Added 1995 by GBG; see Eric Eide notes.
+}%
+
+\def \copyrightpage
+{%
+    \newpage
+    \thispagestyle{empty}%
+    \rule{0in}{4.25in}%
+    \noindent
+    \begin{minipage}{.95\textwidth}%
+        \begin{center}%
+            Copyright \copyright\ \@author\ \@copyrightyear
+            \uuthesis@frontmattersmallskip
+            All Rights Reserved
+        \end{center}%
+    \end{minipage}%
+    \rule{0in}{4.2in}%
+    \if@report \else \addtocounter{page}{-1}\fi
+    \uuthesis@noise{Copyright.}%
+    \newpage    % Added 1995 by GBG; see Eric Eide notes.
+}%
+
+\def \uuthesis@optionalfrontskip{\vskip 15pt}%
+
+\def \optionalfront #1
+{%
+    \newpage
+    \thispagestyle{empty}%
+    \addcontentsline{toc}{chapter}{\uppercase{#1}}%
+    \mainheading{#1}%
+    \uuthesis@optionalfrontskip
+    \uuthesis@noise{#1.}%
+}
+
+%%% --------------------------------------------------------------------
+%%% The University of Utah Thesis Office requires tighter spacing
+%%% above and below quotation and quote environments.  We alter the
+%%% definitions from uuthesis2e.cls to satisfy that requirement.
+%%%
+%%% The new University of Utah definitions eliminate all glue between
+%%% paragraphs, and to make the spacing above and below match the
+%%% outer double spacing, while setting the quote and quotation single
+%%% spaced.  Notice that the inner list environment is nested inside a
+%%% \begingroup ... \endgroup, so that dimension changes are
+%%% restricted to that group!
+
+\renewenvironment{quotation} % for paragraph-length sample text
+{%
+    %% Several packages change list definitions, and debugging in
+    %% sample theses shows that the original value of this spacing
+    %% value acquires stretchability that must be eliminated if we are
+    %% to be able to ensure correct spacing between the preceding
+    %% prose and this quote, so we must restore its original
+    %% definition.
+    \def \@listi {\leftmargin = \leftmargini}
+    \begingroup
+        %%% The University of Utah Thesis Office wants the baseline
+        %%% of the first line of the quotation at the same double
+        %%% spacing as the surrounding text
+        \par  % needed to force previous paragraph to be set in double-spaced mode
+        \topsep       = \baselineskip
+        \baselineskip = \normalbaselineskip
+        \list {} {%
+                     \labelwidth    = \z@
+                     \labelsep      = \z@
+                     \listparindent = \parindent
+                     \itemindent    = \listparindent
+                     \rightmargin   = \leftmargin
+                     \parsep        = \z@
+                     % \tracingoff
+                 }%
+        \vspace*{-1.2\baselineskip}% hack!
+        \item
+        \relax
+}%
+{%
+        \endlist
+        %%% We must end the current paragraph to ensure that the
+        %%% quoted text is typeset single spaced.  Normal double
+        %%% spacing resumes in the following paragraph.
+        \par
+        %%% The next skip discards pending vertical space, so that the
+        %%% line that follows is is typeset with normal double
+        %%% spacing, ensuring that the last line of the quote or
+        %%% quotation is double-spaced from the following line.
+        \vskip -\lastskip
+    \endgroup
+}%
+
+\renewenvironment{quote} % for one or more one-line sample texts
+{%
+    %% Several packages change list definitions, and debugging in
+    %% sample theses shows that the original value of this spacing
+    %% value acquires stretchability that must be eliminated if we are
+    %% to be able to ensure correct spacing between the preceding
+    %% prose and this quote, so we must restore its original
+    %% definition.
+    \def \@listi {\leftmargin = \leftmargini}
+    \begingroup
+        %%% The University of Utah Thesis Office wants the baseline
+        %%% of the first line of the quotation at the same double
+        %%% spacing as the surrounding text
+        \par  % needed to force previous paragraph to be set in double-spaced mode
+        \topsep       = \baselineskip
+        \baselineskip = \normalbaselineskip
+        \list {} {%
+                     \rightmargin = \leftmargin
+                 }%
+        \vspace*{-1.2\baselineskip}% hack!
+        \item
+        \relax
+}%
+{%
+        \endlist
+        %%% We must end the current paragraph to ensure that the
+        %%% quoted text is typeset single spaced.  Normal double
+        %%% spacing resumes in the following paragraph.
+        \par
+        %%% The next skip discards pending vertical space, so that the
+        %%% line that follows is is typeset with normal double
+        %%% spacing, ensuring that the last line of the quote or
+        %%% quotation is double-spaced from the following line.
+        \vskip -\lastskip
+    \endgroup
+}%
+
+%%: %%% --------------------------------------------------------------------
+%%: %%% Restore the original book.cls support for \pagestyle{headings},
+%%: %%% eliminating the obnoxious uppercasing of running headers
+%%:
+%%: \let \HideMakeUppercase = \relax
+%%:
+%%: \def \ps@headings
+%%: {%
+%%:     \let \@evenfoot = \@empty
+%%:     \let \@oddfoot  = \@empty
+%%:     \def \@evenhead   {\thepage \hfil \slshape \leftmark}%
+%%:     \def \@oddhead    {{\slshape \rightmark}\hfil \thepage}%
+%%:     \let \@mkboth   = \markboth
+%%:     %
+%%:     \def \chaptermark ##1
+%%:     {%
+%%:         \markboth
+%%:         {%
+%%:             \HideMakeUppercase
+%%:             {%
+%%:                 \ifnum \c@secnumdepth>\m@ne
+%%:                     \if@mainmatter
+%%:                         \@chapapp \ \thechapter. \ %
+%%:                     \fi
+%%:                 \fi
+%%:                 ##1%
+%%:             }%
+%%:         }%
+%%:         {}%
+%%:      }%
+%%:     %
+%%:     \def \sectionmark ##1
+%%:     {%
+%%:         \markright
+%%:         {
+%%:             \HideMakeUppercase
+%%:             {%
+%%:                 \ifnum \c@secnumdepth>\z@
+%%:                   \thesection. \ %
+%%:                 \fi
+%%:                 ##1%
+%%:             }%
+%%:         }%
+%%:     }%
+%%: }%
+
+%%% We need to change from the default "Bibliography" to "References"
+\global \def \bibname {References}
+
+%%% Redefine verbatim environment to use single spacing, both to
+%%% be consistent with single-space quote and quotation environments,
+%%% and, more importantly, not to change the meaning of input that
+%%% uses backslash-newline to mean implicit joining of input!
+
+\def \verbatim    {\@verbatim \singlespace \frenchspacing \@vobeyspaces \@xverbatim}
+
+\def \endverbatim {\if@newlist \leavevmode \fi \endtrivlist \removelastskip  \doublespace}
+
+%%% We need a default definition of \chaptermark in case users switch
+%%% between \usepackage {uuthesis-pageheaders} and \pagestyle
+%%% {myheadings}
+
+\let \HideMakeUppercase = \relax
+
+\def \chaptermark #1%
+{%
+    \markboth
+    {%
+        \HideMakeUppercase
+        {%
+            \ifnum \c@secnumdepth > \m@ne
+                \if@mainmatter
+                    \@chapapp \ \thechapter. \ %
+                \fi
+            \fi
+            #1%
+        }%
+    }%
+    {}%
+}%

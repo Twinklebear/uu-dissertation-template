@@ -1,0 +1,143 @@
+%%% -*-TeX-*-
+%%% ====================================================================
+%%% This style file redefines sectional headings to set them in the
+%%% official Utah red color (default, but changeable by the user by,
+%%% e.g.,
+%%%     \definecolor{utahheadingcolor} {rgb}  {0.0, 0.8, 0.0}
+%%% AFTER loading this package
+%%%
+%%% Usage:
+%%%
+%%%    \documentclass {uuthesis2e}
+%%%    \usepackage    {uuthesis-2016-h}
+%%%    \usepackage    {uuthesis-color-headings}
+%%%
+%%% [12-Mar-2017] -- Revise definition of newtheorem* from amsthm.sty to
+%%%                  remove unwanted space before the period following
+%%%                  the theorem heading when color headings are used.
+%%% [09-Mar-2017] -- Fix vertical spacing bug in \mainheadingtext: change
+%%%                  \color{...}{...} to {\color{...}{...}}
+%%% [30-Mar-2016] -- Fix bug in one \addtocontents command.
+%%% [22-Mar-2016] -- More cleanup of macro layout, and removal of debug
+%%%                  statements.
+%%% [17-Mar-2016] -- Further tweak to table of contents generation
+%%% [16-Mar-2016] -- Require rgb package too for convenient X11-style
+%%%                  color names
+%%% [05-Jan-2016] -- Version 1.00
+%%% ====================================================================
+
+\NeedsTeXFormat{LaTeX2e}[1994/12/01]
+% \ProvidesPackage{uuthesis-color-headings}[2016/04/04 v1.07]
+% \ProvidesPackage{uuthesis-color-headings}[2017/03/09 v1.08]
+\ProvidesPackage{uuthesis-color-headings}[2017/03/12 v1.09]
+
+\immediate \write16 {===============================================================================}%
+\immediate \write16 {}%
+\immediate \write16 {This is uuthesis-color-headings.sty version 1.09 <12 March 2017>}%
+\immediate \write16 {}%
+\immediate \write16 {WARNING: Color in theses is still experimental, and subject to approval by}%
+\immediate \write16 {the University of Utah Thesis Office!  One of their concerns is that color}%
+\immediate \write16 {pages printed on black-and-white printers should not have text disappear}%
+\immediate \write16 {because it is too light to see against a white paper background.}%
+\immediate \write16 {===============================================================================}%
+
+\RequirePackage{color}%
+\RequirePackage{rgb}%
+
+\definecolor{utahblue}         {rgb}  {0.0, 0.0, 0.8}%
+\definecolor{utahgreen}        {rgb}  {0.0, 0.6, 0.0}%
+\definecolor{utahred}          {rgb}  {0.8, 0.0, 0.0} % official definition for University of Utah Printing Services
+\definecolor{utahheadingcolor} {rgb}  {0.8, 0.0, 0.0} % official definition for University of Utah Printing Services
+\definecolor{utahtheoremcolor} {rgb}  {0.0, 0.0, 0.8}
+
+\def \mainheadingtext #1#2{% #1=text, #2=font size and style
+  \begin{center}%
+    \parbox{\mainheadingwidth}{%
+     \begin{center}%
+        #2%
+        {\color{utahheadingcolor}{\uppercase{{\nohyphenation #1}}}}%
+      \end{center}%
+      \removelastskip
+    }% end parbox
+   \end{center}%
+}%
+
+\def \@Usect #1#2#3#4#5#6[#7]#8%
+{%
+    \testsize{#8}{#6}\@testsizetrue
+    \ifnum #2>\c@secnumdepth \relax
+        \def \@svsec{}%
+    \else
+        \refstepcounter{#1}%
+        \edef \@svsec {\csname the#1\endcsname \hskip 1em }%
+    \fi
+    \@tempskipa = #5\relax
+    \ifdim \@tempskipa>\z@
+        \begingroup #6 \relax
+            \@hangfrom{\hskip #3\relax \color{utahheadingcolor}{\@svsec}}{\interlinepenalty \@M {\color{utahheadingcolor}{#8}}\par}%
+        \endgroup
+        \csname #1mark\endcsname{#7}%
+        \ifnum \c@tocdepth>\z@\relax
+            \ifnum \c@section = 1\relax
+                \addtocontents{toc}{\protect \ifuuthesis@needtocspace \protect \vspace{\protect \uuthesis@chaptersectionspace} \protect \fi \protect \global \protect \uuthesis@needtocspacefalse}%
+            \fi
+            \addcontentsline{toc}{#1}{\ifnum #2>\c@secnumdepth \else \protect\numberline{\csname the#1\endcsname}\fi #7}%
+        \fi
+     \else
+        \def \@svsechd
+        {%
+            #6\hskip #3\relax  %% \relax added 2 May 90
+            \@svsec {\color{utahheadingcolor}{#8}}\csname #1mark\endcsname {#7}%
+            \ifnum\c@tocdepth>\z@\relax
+               \ifnum \c@section = 1 \addtocontents{toc}{\protect \ifuuthesis@needtocspace \protect \vspace{\protect \uuthesis@chaptersectionspace} \protect \fi \protect \global \protect \uuthesis@needtocspacefalse}\fi
+               \addcontentsline{toc}{#1}{\ifnum #2>\c@secnumdepth \else \protect\numberline{\csname the#1\endcsname}\fi #7}%
+            \fi
+        }%
+     \fi
+     \@xsect{#5}%
+    \ifx \uuthesis@pageheaders \undefined
+    \else
+        \def \rightmark{\S \the \c@chapter.\the \c@section: #7}%
+    \fi
+}%
+
+\def \@Ussect #1#2#3#4#5{%
+    \testsize{#5}{#4}\@testsizetrue
+    \@tempskipa #3\relax
+    \ifdim \@tempskipa>\z@
+        \begingroup
+            {\color{utahheadingcolor}{#4}}%
+            \@hangfrom{\hskip #1}{\interlinepenalty \@M%
+            \nopagebreak[4]%
+            {\color{utahheadingcolor}{#5}}\par}%
+        \endgroup
+    \else
+        \def \@svsechd{{\color{utahheadingcolor}{#4}}\hskip #1\relax {\color{utahheadingcolor}{#5}}}%
+    \fi
+    \@xsect{#3}%
+}%
+
+%% The original of this definition is taken from amsthm.sty:157.
+%% We add color wrappers around the first and second arguments.
+\def\@begintheorem#1#2[#3]{%
+  \deferred@thm@head{\the\thm@headfont \thm@indent
+    \@ifempty{#1}{\let\thmname\@gobble}{\let\thmname\@iden}%
+    \@ifempty{#2}{\let\thmnumber\@gobble}{\let\thmnumber\@iden}%
+    \@ifempty{#3}{\let\thmnote\@gobble}{\let\thmnote\@iden}%
+    \thm@swap\swappedhead
+    \thmhead{\color{utahtheoremcolor}{#1}}%   theorem-like name
+            {\color{utahtheoremcolor}{#2}}%   theorem-like number
+            {#3}%                             optional numbered-within name
+    \the\thm@headpunct
+    \thmheadnl % possibly a newline.
+    \hskip\thm@headsep
+  }%
+  \ignorespaces}
+
+%%% Original definitions from uuthesis2e.cls
+%%% \def \fnum@figure {\bfseries Figure \thefigure}%
+%%% \def \fnum@table  {\bfseries Table  \thetable}%
+
+%%% Modified definitions with colored text
+\def \fnum@figure {\bfseries \color{utahheadingcolor}{Figure \thefigure}}%
+\def \fnum@table  {\bfseries \color{utahheadingcolor}{Table  \thetable}}%

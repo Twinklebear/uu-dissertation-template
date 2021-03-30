@@ -1,0 +1,117 @@
+%%% -*-TeX-*-
+%%% ====================================================================
+%%% This file contains changes to uuthesis-2016-d (or later) to
+%%% provide support for an end-of-thesis subject index.  It must be
+%%% used INSTEAD of the standard LaTeX makeidx package, because it
+%%% needs to define additional macros and formatting compatible with
+%%% the University of Utah Thesis Office regulations.
+%%%
+%%% Modern machines are sufficiently fast that there is no observable
+%%% time savings from suppressing index generation, so this file
+%%% always issues the \makeindex command.
+%%%
+%%% Usage:
+%%%
+%%%     \documentclass {uuthesis2e}
+%%%     ... other \usepackage{...} commands ...
+%%%     \usepackage    {uuthesis-2016-d}
+%%%     \usepackage    {uuthesis-index}
+%%%     ... front matter definitions ...
+%%%     \begin {document}
+%%%     ...
+%%%     \bibliography  {siam}
+%%%     \printindex
+%%%     \end   {document}
+%%%
+%%% Two aspects of the formatting are user controllable via commands
+%%% issued just before the \printindex command:
+%%%
+%%%     \columnsep = 0pt                % change from nonzero default
+%%%     \renewcommand{TOPIC INDEX}      % change from SUBJECT INDEX default
+%%%
+%%% That location is also a reasonable place to insert index cross
+%%% references, like these examples:
+%%%
+%%%     \index{DCT|see{Discrete Cosine Transform}}%
+%%%     \index{DWT|see{Discrete Wavelet Transform}}%
+%%%     \index{DCT|seealso{Discrete Wavelet Transform}}%
+%%%     \index{DWT|seealso{Discrete Cosine Transform}}%
+%%%     \index{mu@$\mu$ (mu)|see{Borel measure}}%
+%%%     \index{m|seealso{mu (\$mu$)}}%
+%%%
+%%% [23-Mar-2016]
+%%% ====================================================================
+
+\NeedsTeXFormat{LaTeX2e}[1994/12/01]
+\ProvidesPackage{uuthesis-index}[2016/05/03 v1.01]
+
+\immediate \write16 {===============================================================================}%
+\immediate \write16 {}%
+\immediate \write16 {This is uuthesis-index.sty version 1.01 <3 May 2016>}%
+\immediate \write16 {}%
+\immediate \write16 {===============================================================================}%
+
+\usepackage{makeidx}
+
+\def \@makeschapterhead #1{\chapter{#1}} % uuthesis2e.cls uses, but does not define, this macro!
+
+\ifx \undefined \@restonecoltrue        % this standard LaTeX internal macro is not defined in uuthesis2e.cls
+    \newif \if@restonecol
+    \@restonecoltrue
+\fi
+
+\def \indexname {SUBJECT INDEX}
+
+\renewenvironment{theindex}
+                 {%
+                     \if@twocolumn
+                         \@restonecolfalse
+                     \else
+                         \@restonecoltrue
+                     \fi
+                     \twocolumn[\mainheading{\MakeUppercase \indexname}]%
+                     %% \@mkboth{\indexname}%
+                     %%        {\indexname}%
+                     \addcontentsline {toc} {chapter} {{\MakeUppercase \indexname}}%
+                     \thispagestyle {plain}%
+                     \parindent     = \z@
+                     \parskip       = \z@ \@plus .3\p@\relax
+                     \columnseprule = \z@
+                     \columnsep     = 35\p@
+                     \columnsep     = 50\p@
+                     \columnseprule = 0.5\p@
+                     \columnwidth   = \textwidth
+                     \advance \columnwidth by -\columnseprule
+                     \advance \columnwidth by -\columnsep
+                     \advance \columnwidth by -6\p@
+                     \divide \columnwidth by 2
+                     \let \item     = \@idxitem
+		     \ifx \uuthesis@pageheaders \undefined
+		     \else
+			 %% \global \def \leftmark  {\indexname}%
+			 %% \global \def \rightmark {\indexname}%
+                     \fi
+                     \raggedright
+                     \sloppy
+                 }
+                 {\if@restonecol \onecolumn \else \clearpage \fi}
+
+\makeindex
+
+\newcommand{\newindexgroup}[1]
+{%
+    \ifx \undefined \color
+        \def \color #1{}
+    \fi
+    % {\textbf{\large \centerline{\color{utahheadingcolor}{#1}}}}%
+    % {\textbf{\large \centerline{\color{utahheadingcolor}{\hrulefill\ #1\ \hrulefill }}}}%
+    \setbox0 = \hbox{#1}%
+    % {\textbf{\large \centerline{\color{utahheadingcolor}{\mbox{ }\hrulefill\ \raisebox{-0.5\ht0}{#1}\ \hrulefill \mbox{ }}}}}%
+    {\textbf{\large \centerline{\color{utahheadingcolor}{\kern 2em\hrulefill\ \raisebox{-0.5\ht0}{#1}\ \hrulefill \kern 2em}}}}%
+    \nopagebreak
+    \vskip 0.5\ht0
+    \nopagebreak
+    %% \markboth{\indexname\ \ldots{} #1}%
+    %%          {\indexname\ \ldots{} #1}%
+    %% \nopagebreak
+}

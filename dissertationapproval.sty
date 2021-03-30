@@ -1,0 +1,42 @@
+\def\approvaldepartment#1{\gdef\@approvaldepartment{#1}}
+\def\chairdateapproved#1{\gdef\@chairdateapproved{#1}}
+\def\firstdateapproved#1{\gdef\@firstdateapproved{#1}}
+\def\seconddateapproved#1{\gdef\@seconddateapproved{#1}}
+\def\thirddateapproved#1{\gdef\@thirddateapproved{#1}}
+\def\fourthdateapproved#1{\gdef\@fourthdateapproved{#1}}
+
+\def\bfunderline#1{\underline{\kern 0.5em \textbf{#1}\kern 0.5em}}
+
+\long \def \dissertationapproval{%
+  \newpage
+%
+  \thispagestyle{empty}
+  \begin{center}
+    \textbf{\large The University of Utah Graduate School} \\[8ex]
+    \textbf{\large STATEMENT OF DISSERTATION APPROVAL}
+  \end{center}
+%
+  \vfill
+  \begin{center}
+    \renewcommand{\arraystretch}{1.5}
+    \newcommand{\underdate}{\kern 2em{\tiny Date Approved}\kern 0.5em}
+    \begin{tabular}{lll}
+       The dissertation of           & \multicolumn{2}{l}{\bfunderline{\@author}} \\
+      \multicolumn{3}{l}{has been approved by the following supervisory committee members:} \\[4ex]
+      \bfunderline{\@committeechair},& Chair(s)                   & \bfunderline{\@chairdateapproved} \\[-2.00ex]
+                                     &                            & {\underdate} \\
+      \bfunderline{\@firstreader},   & Member                     & \bfunderline{\@firstdateapproved} \\[-2.00ex]
+                                     &                            & {\underdate} \\
+      \bfunderline{\@secondreader},  & Member                     & \bfunderline{\@seconddateapproved} \\[-2.00ex]
+                                     &                            & {\underdate} \\
+      \bfunderline{\@thirdreader},   & Member                     & \bfunderline{\@thirddateapproved} \\[-2.00ex]
+                                     &                            & {\underdate} \\
+      \bfunderline{\@fourthreader},  & Member                     & \bfunderline{\@fourthdateapproved} \\[-2.00ex]
+                                     &                            & {\underdate} \\[4ex]
+      \multicolumn{3}{l}{by \bfunderline{\@departmentchair}, Chair/Dean of} \\
+      \multicolumn{3}{l}{the Department/College/School of \bfunderline{\@approvaldepartment}} \\
+      \multicolumn{3}{l}{and by \bfunderline{\@graduatedean}, Dean of The Graduate School.}
+    \end{tabular}
+  \end{center}
+  \vfill
+}

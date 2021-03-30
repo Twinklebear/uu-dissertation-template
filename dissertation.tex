@@ -1,0 +1,360 @@
+%%% -*-LaTeX-*-
+%%% ====================================================================
+%%% This is a sample top-level LaTeX-2e file for typesetting a thesis
+%%% or dissertation at the University of Utah.  Most students find it
+%%% convenient to start with a COPY of this file as a template, and
+%%% then alter that copy to match their needs.
+%%%
+%%% There is an associated Unix Makefile that can be similarly
+%%% customized, and then the only command ever needed to typeset the
+%%% complete thesis is the single word "make".  Of course, during
+%%% writing and typesetting, not all of the steps are needed, so
+%%% often, one can just name a convenience target such as "make
+%%% dvi-pass" or "make pdf-pass" to do just a single pass of LaTeX and
+%%% BibTeX.
+%%%
+%%% There should be no, or very few, macro definitions in this file;
+%%% any needed belong in a private style file, called mythesis.sty,
+%%% and input below after all other packages.  The bulk of this file
+%%% should just be command invocations, and any arguments that they
+%%% need.
+%%%
+%%% We exploit the fact that TeX ignores spaces after command names to
+%%% line up arguments for better readability.
+%%%
+%%% Each chapter should be a separate complete file, so that you can
+%%% insert a command like \includeonly{chap_intro} before the first
+%%% \include{chap_xxx} command to avoid typesetting all but the
+%%% chapter that you are currently working on, to save time.
+%%%
+%%% Remember that occupants of job positions change jobs from time to
+%%% time: YOU are responsible for ensuring correct names of all humans
+%%% mentioned in this file!
+%%%
+%%% [16-Mar-2016]
+%%% ====================================================================
+
+\documentclass[11pt,Chicago]{uuthesis2e}
+
+%%% Undefine two macros from uuthesis2e.cls that conflict with
+%%% definitions in amsthm.sty that fail to check for prior definitions!
+%%% NB: The amsthm package refines the LaTeX theorem environment,
+%%% and the uuthesis-color-headings wraps that definition, so the
+%%% amsthm package must be read first!
+\let \proof    = \relax
+\let \endproof = \relax
+\usepackage {amsthm}
+
+%%% ====================================================================
+%%% Choose an alternate font family for the document if the TeX default
+%%% of Computer Modern is not wanted:
+
+\usepackage{mathpazo}
+%%% ====================================================================
+%%% Some miscellaneous Utah- and student-specific settings:
+%%%
+%%% Chapter is one level, section and subsection are the next two levels.
+
+\fourlevels
+
+%%% ====================================================================
+%%% The remaining packages are required by this particular thesis,
+%%% but other theses will almost certainly need different packages:
+%%%
+%%% WARNING: MANY \LaTeX{} packages change dimensions, glue, and/or
+%%% formatting styles, and such changes are likely to conflict with
+%%% University of Utah Thesis Office requirements.  Therefore, minimize
+%%% the number of packages that you include!
+
+\usepackage {amsmath}
+\usepackage {amssymb}
+\usepackage {bm}
+\usepackage {bibnames}
+\usepackage {citesort}
+\usepackage {graphicx}
+\usepackage {graphpap}
+
+%%% ====================================================================
+% My own packages
+\usepackage{url}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{microtype}
+\usepackage{booktabs}
+\usepackage{soul}
+\usepackage{color}
+\usepackage{bibentry}
+\usepackage{cite}
+\usepackage{makecell}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage[plain]{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage[capitalize]{cleveref}
+\crefname{paragraph}{section}{sections}
+\Crefname{paragraph}{Section}{Sections}
+\usepackage{relsize}
+\usepackage{float}
+
+% Christine mentions for expedited service from thesis office,
+% only include sections in the TOC. Left showing all for now
+% so it's easier to see the structure
+\setcounter{tocdepth}{3}
+
+\nobibliography*
+\usepackage{subcaption}
+\captionsetup{compatibility=false,labelfont={bf,color=utahheadingcolor}}
+
+\DeclareCaptionLabelFormat{figure}{Fig.~\thefigure}
+\captionsetup[figure]{labelformat=figure}
+
+\usepackage{minted}
+\usemintedstyle{tango}
+
+% Minted extra styling
+\renewcommand\theFancyVerbLine{\small\arabic{FancyVerbLine}}
+\definecolor{mintedbgcolor}{rgb}{0.95,0.95,0.95}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\usepackage{minted}
+\setminted{fontsize=\small,mathescape}
+\BeforeBeginEnvironment{minted}{
+    \begin{tcolorbox}[colback=mintedbgcolor,left=1mm]
+}
+\AfterEndEnvironment{minted}{\end{tcolorbox}}
+
+%%% ====================================================================
+%%% Support for a subject index:
+
+\usepackage {uuthesis-index}
+
+%%% ====================================================================
+%%% The various uuthesis-*.sty packages must come AFTER all other
+%%% system-provided packages, so that they can correctly override
+%%% settings from those packages.
+
+%%% Include latest updates for 2016 (WARNING: the name is subject to
+%%% change: see http://www.math.utah.edu/pub/uuthesis/ for the most
+%%% current version.)
+
+\usepackage {uuthesis-2016-h}  % MANDATORY package
+
+%%% This is an OPTIONAL package that sets chapter and sectional headings
+%%% in color:
+%%% Use one or the other of these:
+% \usepackage {color}
+\definecolor{utahheadingcolor} {rgb}  {0.0, 0.0, 0.0}
+\definecolor{utahtheoremcolor} {rgb}  {0.0,0.0,0.0} % purple4
+\definecolor{utahtheoremcolor} {rgb}  {0.0,0.0,0.0} % brown4
+
+%%% Here is another, and more convenient, way to define colors, via
+%%% aliases of named colors in the X11-derived rgb.sty file
+
+\usepackage{coloralias}
+\definecoloralias{utahheadingcolor}{black}
+\definecoloralias{utahtheoremcolor}{black}
+
+%%% ====================================================================
+%%% Support for a subject index:
+
+\usepackage {uuthesis-index}
+
+%%% ====================================================================
+%%% This single user-specific file is where all personal customizations
+%%% and macro definitions should be placed, and it should come LAST,
+%%% after ALL OTHER packages, in case it needs to override some of their
+%%% definitions.
+
+\usepackage {mythesis}
+\usepackage{marginnote}
+
+%%% ====================================================================
+% Will: it seems like the package doesn't have the right geometry of the
+% pages? So restyle it to be right
+\usepackage[letterpaper,total={6in,9in},left=1.25in,right=1.25in,top=1in,bottom=1in,
+footskip=0in]{geometry}
+
+
+%%% ====================================================================
+%%% The student-specific front matter fields are defined here:
+
+\author                 {Your Name}
+
+\title{Your Title}
+
+\thesistype             {dissertation}
+
+\dedication             {}
+
+%%% Most students need just a short degree name, like this:
+\degree                 {Doctor of Philosophy}
+%%% However, multiline degrees are possible, and are done like this:
+\degree                 {Doctor of Philosophy \\
+                         in \\
+                         X}
+
+%%% College- and Department-level definitions:
+\approvaldepartment     {}
+\department             {}
+\graduatedean           {}
+\departmentchair        {}
+
+%%% The graduate student's committee members:
+\committeechair         {}
+\firstreader            {}
+\secondreader           {}
+\thirdreader            {}
+\fourthreader           {}
+\chairtitle             {}
+
+%%% NB: It is rare, but possible, for there to be two chairs, For
+%%% example, one student had
+%%%
+%%% \committeechair{\mbox{\small Andrej Cherkaev and Andrejs Treibergs}}
+%%%
+%%% The \mbox{} ensures that line breaks cannot happen, and the \small
+%%% is necessary to make the names fit on the Dissertation Approval form
+
+%%% Dates that must be adjusted for each academic term, and be permitted
+%%% according to the University of Utah Thesis Office:
+\submitdate             {}
+\copyrightyear          {}
+
+%%% Dates on which committee members approved the thesis
+%\chairdateapproved      {DD MM YYYY}
+\chairdateapproved      {\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;}
+\firstdateapproved      {\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;}
+\seconddateapproved     {\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;}
+\thirddateapproved      {\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;}
+\fourthdateapproved     {\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;}
+
+%%% ====================================================================
+%%% Typesetting begins here:
+
+\begin{document}
+
+%% Comment out items by inserting a percent % character
+\frontmatterformat
+\titlepage
+\copyrightpage
+\dissertationapproval
+\setcounter {page}     {2}             % UofU Thesis Office demands abstract on p. iii: start one lower
+\preface    {content/abstract} {Abstract}
+\dedicationpage
+\tableofcontents
+\listoffigures
+\listoftables
+%
+%%% Optional front matter page(s), made from source "notation.tex". If
+%%% you don't need it, then comment out the \optionalfront command
+%%% line!  The first argument is the (unnumbered) section header for
+%%% the text supplied by the file input by the second argument; that
+%%% file must NOT contain \chapter, \section, \subsection, \ldots{}
+%%% sectioning commands.
+
+%\optionalfront {Notation and Symbols} {\input{notation}}
+
+%%% Uncomment this is you want the contents of acknowledge.tex typeset here.
+%%% Note that both "Acknowledgement" and "Acknowledgment" are accepted
+%%% spellings of that word.
+
+% \preface{acknowledge}{Acknowledgements}
+
+\maintext       % Start normal page numbering: parts and chapters follow.
+
+\pagestyle{headings} % NEW for sample-thesis-6
+
+
+\include{content/introduction}
+
+\numberofappendices = 0   % Set 0 for none, else number of appendices.
+%\numberofappendices = 1   % Set 0 for none, else number of appendices.
+%\appendix       % Chapters, sections are now appendix style A, A.1, A.2, B, C, D, ...
+
+%\include{content/appendix_terminology}
+%\include{appb}
+%\include{appc}
+
+%%% The choice of bibliography style is a major decision, jointly made
+%%% by you, your thesis advisor and the thesis editor. Common choices are
+%%% one of the four standard BibTeX styles (abbrv, alpha, plain, and unsrt),
+%%% or enhanced styles like acm, amsplain, siam, and hundreds of others
+%%% available in TeX Live, and other Unix and Windows TeX distributions.
+%%%
+%%% Do NOT handcode your reference list, because you are unlikely to
+%%% achieve consistency or conformance to the University of Utah Thesis Office
+%%% requirements: let BibTeX do that tedious job for you!
+%%%
+%%% Remember that reference-list metadata in BibTeX files remains
+%%% constant across journals and publishers, and is are often reused
+%%% in other documents and shared with others, whereas formatted
+%%% reference-list styles change: with BibTeX, you only need to record
+%%% the metadata once.
+%%%
+%%% If you prefer named, rather than numeric or tagged citations, you
+%%% may use styles such as authordate{1,2,3,4}, chicago, harvard, or
+%%% natbib.  Be aware, however, that most of those require an
+%%% additional \usepackage{} command to supply \LaTeX{} with
+%%% definitions of commands that the style needs, and that there are
+%%% usually several flavors of LaTeX citation commands beyond the
+%%% standard \cite{} command that you need to understand before you
+%%% can use them properly in your prose.
+
+% Sorted or unsorted?
+\bibliographystyle{IEEEtranS}
+
+%%% This can also specify a comma-separated list (without embedded
+%%% spaces) of *.bib files found by BibTeX in its BIBINPUTS search
+%%% path.  The argument \jobname means the base name of the top-level
+%%% LaTeX file, avoiding an unnecessary filename dependence here.
+%%%
+%%% BibTeX writes only one .bbl file, no matter how many *.bib files
+%%% are listed here, using the name \jobname.bbl.
+%%%
+%%% LaTeX reads BibTeX's formatted reference list from the file
+%%% \jobname.bbl.
+
+\bibliography{dissertation}
+
+%%% The last part of this sample thesis is two specialized indexes,
+%%% and a general topic index.  If the companion Makefile is used to
+%%% create the DVI or PDF file for this work, the topic index excludes
+%%% the lengthy list of free software packages.  However, the biology
+%%% names of the first index are included in the topic index.
+
+%%% Switch from thesis double spacing to single spacing for the three
+%%% indexes, as a matter of style (to match the reference list), and
+%%% for compactness.
+
+\singlespace
+
+%%% Define several index cross references (there are many more such
+%%% in chap1.tex, but the examples here give a useful summary of how
+%%% they are made):
+
+%\index{DCT|see{discrete cosine transform}}
+%\index{DWT|see{discrete wavelet transform}}
+%\index{Borel measure ($\mu$)}
+%\index{mu@$\mu$ (mu)|see{Borel measure}}
+%\index{Escherichia coli@\bioname{Escherichia coli}|see{E. coli}}
+%\index{transform|seealso{Discrete DCT Transform}}
+%\index{transform|seealso{Fast Fourier Transform}}
+
+%\renewcommand {\bioname} [1] {\emph{#1}}   % redefine to suppress color and indexing in index
+%\renewcommand {\fsfname} [1] {\texttt{#1}} % redefine to suppress color and indexing in index
+
+%\renewcommand {\indexname} {Binomial Nomenclature Index}
+
+%\input{\jobname-bioname.ind}
+
+%\renewcommand {\indexname} {Free Software Index}
+
+%\input{\jobname-fsfname.ind}
+
+%\renewcommand {\indexname} {Topic Index}
+
+%\overfullrule = 0pt % suppress visible warnings about overfull hboxes
+%\printindex
+
+\end {document}

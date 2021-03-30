@@ -1,0 +1,220 @@
+%%% -*-TeX-*-
+%%% ====================================================================
+%%% This file contains changes to uuthesis-2016-d (or later) to provide
+%%% running page headers on even and odd pages.
+%%%
+%%% Usage:
+%%%
+%%%    \documentclass {uuthesis2e}
+%%%    \usepackage    {uuthesis-2016-f}
+%%%    \usepackage    {uuthesis-pageheaders}
+%%%
+%%% [01-Apr-2016]
+%%% ====================================================================
+
+\NeedsTeXFormat{LaTeX2e}[1994/12/01]
+\ProvidesPackage{uuthesis-pageheaders}[2016/04/25 v1.04]
+
+\immediate \write16 {===============================================================================}%
+\immediate \write16 {}%
+\immediate \write16 {This is uuthesis-pageheaders.sty version 1.04 <25 April 2016>}%
+\immediate \write16 {}%
+\immediate \write16 {===============================================================================}%
+
+\newif \if@mainmatter
+\@mainmattertrue
+
+\def \@chapapp {Chapter}
+
+\def \@chapter[#1]#2%
+{%
+    \cleardoublepage % was \clearpage, but that messes up even/odd headers!
+    \thispagestyle{empty}%
+    \global \@topnum \z@
+    \if@oneappendix                         % Different treatment for one appendix
+        \uuthesis@noise{\@chapapp:}%
+        \refstepcounter{chapter}%
+        \addcontentsline{toc}{chapter}{\thesisTOC{\@chapapp: #1}\protect \global \protect \uuthesis@needtocspacetrue}%
+        \mainheading{\@chapapp}%
+    \else
+        \ifnum \c@secnumdepth >\m@ne\relax
+            \refstepcounter{chapter}%
+            % If chapter==1 or chapter==A, then TOC gets header
+            \edef \@tmp{\thechapter}%
+            %
+            % [25-Apr-2016] UofU Thesis office wants leaders
+	    % suppressed in CHAPTERS and APPENDICES lines in table of
+	    % contents: we supply that feature by setting the text in
+	    % a wide box
+            \ifx \@tmp \@optionA
+              \addcontentsline{toc}{chapter}{\makebox[0.95\textwidth][l]{\textbf{APPENDICES}}}%
+            \fi
+            %
+            \ifx \@tmp \@optionONE
+              \addcontentsline{toc}{chapter}{\makebox[0.95\textwidth][l]{\textbf{CHAPTERS}}}%
+            \fi
+            %
+            \addcontentsline{toc}{chapter}{\protect\numberline{\thechapter.}\thesisTOC{#1}\protect \global \protect \uuthesis@needtocspacetrue}%
+        \else
+            \addcontentsline{toc}{chapter}{\thesisTOC{#1}\protect \global \protect \uuthesis@needtocspacetrue}%
+        \fi
+        \uuthesis@noise{\@chapapp\space\thechapter.}%
+        \mainheading{\@chapapp\space\thechapter}%
+    \fi
+    \mainheadingtext{#2}{\HFchapter\bfseries}% Text=boldface chapter header font
+    \chaptermark{#1}%
+    \vskip \HFchapterSKIP
+    \nobreak
+    \@afterheading
+    \global \@nobreakfalse
+    \global \def \uuthesis@shortchaptername {#1}%
+    \global \def \rightmark {}% clear running header from previous chapter
+    \global \def \leftmark  {\@chapapp\ \thechapter. \uuthesis@shortchaptername}%
+}%
+
+\def \@Usect #1#2#3#4#5#6[#7]#8%
+{%
+    \testsize{#8}{#6}\@testsizetrue
+    \ifnum #2>\c@secnumdepth \relax
+        \def \@svsec {}%
+    \else
+        \refstepcounter{#1}%
+        \edef \@svsec {\csname the#1\endcsname \hskip 1em }%
+    \fi
+    \@tempskipa = #5\relax
+    % \tracingon
+    \ifdim \@tempskipa > \z@
+        \begingroup
+            #6\relax
+            \@hangfrom{\hskip #3\relax \@svsec}{\interlinepenalty \@M #8\par}%
+        \endgroup
+        \csname #1mark\endcsname{#7}%
+        \ifnum \c@tocdepth>\z@\relax
+            \ifnum \c@section = 1\relax
+                \addtocontents{toc}{\protect \ifuuthesis@needtocspace \vspace{\protect \uuthesis@chaptersectionspace} \protect \fi \protect \global \protect \uuthesis@needtocspacefalse}%
+            \fi
+            \addcontentsline{toc}{#1}%
+            {%
+                \ifnum #2>\c@secnumdepth
+                \else
+                    \protect \numberline{\csname the#1\endcsname}%
+                \fi
+                #7%
+            }%
+        \fi
+    \else
+        \def \@svsechd
+        {%
+            #6\hskip #3\relax  %% \relax added 2 May 90
+            \@svsec #8\csname #1mark\endcsname {#7}%
+            \ifnum \c@tocdepth>\z@ \relax
+                \ifnum \c@section=1
+                    \addtocontents{toc}{\protect \ifuuthesis@needtocspace \vspace{\protect \uuthesis@chaptersectionspace} \protect \fi \protect \global \protect \uuthesis@needtocspacefalse}%
+                \fi
+                 \addcontentsline{toc}{#1}%
+                 {%
+                    \ifnum #2>\c@secnumdepth
+                    \else
+                        \protect \numberline{\csname the#1\endcsname}%
+                    \fi
+                    #7%
+                }%
+            \fi
+        }%
+    \fi
+    % \tracingoff
+    \@xsect{#5}%
+    \def \rightmark {\S \thechapter .\the \c@section: #7}%
+}%
+
+\let \HideMakeUppercase = \relax
+
+\def \ps@headings
+{%
+    %% The UofU thesis style pagination places the page number in the
+    %% upper-right corner, as for one-sided printing.  In order to
+    %% alternate chapter (odd pages) and section (even pages) headings,
+    %% we have to force the twoside option.  That does not cause problems
+    %% with page margins, because the thesis style always centers the box of
+    %% printable text on the page, with equal left and right margins.
+
+    \@twosidetrue     % tested in LaTeX's low-level \shipout routine (latex.ltx:6822)
+    \let \@oddfoot  = \@empty
+    \let \@evenfoot = \@empty
+    \def \@oddhead   {{\slshape \rightmark }\hfil \thepage}%
+    \def \@evenhead  {{\slshape \leftmark  }\hfil \thepage}%
+    \let \@mkboth   = \markboth
+
+    \def \chaptermark##1%
+    {%
+        \markright {%
+            \HideMakeUppercase
+            {%
+              \ifnum \c@secnumdepth >\m@ne
+                \if@mainmatter
+                  \@chapapp\ \thechapter. \ %
+                \fi
+              \fi
+              ##1
+            }%
+        }%
+    }%
+}
+
+\let \ps@myheadings = \ps@headings
+
+\def \thebibliography #1%
+{%
+    \global \def \bibname {References}
+    \ifrawbibliography
+    \else
+        \newpage
+        \thispagestyle{empty}%
+        \addcontentsline{toc}{chapter}{\MakeUppercase \bibname}%
+        % Switch singlespace to after the heading gets printed.
+        \mainheading{\MakeUppercase \bibname}%
+        \par
+        \removelastskip
+        \singlespace
+        \par
+        \removelastskip% GBG Oct 1993
+        \fixmainheadingSKIP
+    \fi
+    \ifx \uuthesis@pageheaders \undefined
+    \else
+	\global \def \leftmark  {\bibname}%
+	\global \def \rightmark {\bibname}%
+    \fi
+    \list{[\arabic{enumi}]}%
+    {\settowidth\labelwidth{[#1]}\leftmargin%
+       \labelwidth\advance\leftmargin\labelsep\usecounter{enumi}}%
+    \def\newblock{\hskip .11em plus .33em minus -.07em}%
+    \sloppy\clubpenalty4000\widowpenalty4000%
+    \sfcode`\.=1000\relax
+}
+
+\def \appendix
+{%
+    \newpage
+    \ifnum \numberofappendices = 0\relax
+	\typeout {Error: 'numberofappendices' was 0, now set to 2.}%
+	\typeout {Change it to 1 or higher so TOC is correct.}
+	\numberofappendices = 2
+    \fi
+    \ifnum \numberofappendices = 1\relax
+	\@oneappendixtrue
+    \else
+	\@oneappendixfalse
+    \fi
+    \setcounter {oldchapter}  {\value {chapter}}
+    \setcounter {chapter}     {0}%
+    \setcounter {section}     {0}%
+    \setcounter {oldtocdepth} {\value {tocdepth}}
+    \setcounter {tocdepth}    {0}% Only chapters go into appendix TOC
+    \def \thechapter {\Alph{chapter}}%
+    %% \def \@chapapp   {APPENDIX}%
+    \def \@chapapp   {Appendix}% for consistency with chapter naming in running headers
+}
+
+% Define a dummy macro whose name we can check for in other packages
+\def \uuthesis@pageheaders {}

@@ -1,0 +1,233 @@
+%%% ====================================================================
+%%% This style file extends the chapterbib package to be usable with
+%%% the UofUtah thesis class file.
+%%%
+%%% The original version was created by Karl Schwede.
+%%% This file is maintained by Nelson Beebe and Karl Schwede.
+%%%
+%%% [01-Apr-2016] -- version 1.02: adapt for uuthesis-*.sty conventions.
+%%% [24-Apr-2016] -- version 1.01: second version
+%%% ====================================================================
+
+\NeedsTeXFormat {LaTeX2e} [1994/12/01]
+\ProvidesPackage {uuthesis-chapterbib} [2016/04/25 v1.04]
+
+\immediate \write16 {===============================================================================}%
+\immediate \write16 {}%
+\immediate \write16 {This is uuthesis-chapterbib.sty version 1.04 <25 April 2016>}%
+\immediate \write16 {}%
+\immediate \write16 {===============================================================================}%
+
+%%% We need the standard LaTeX chapterbib package, and the fp package
+%%% for support of fixed-point arithmetic to make it easier to
+%%% automate the numbering of various objects.
+
+\usepackage {chapterbib}
+\usepackage [nomessages] {fp}
+
+%%% We need references at the end of each section to appear in the
+%%% table of contents as a numbered section.  Hence we redefine the
+%%% bibliography package here.  The definition of this macro in
+%%% uuthesis-pageheaders.sty differs substantially, because there,
+%%% the reference list is treated like an unnumbered chapter that
+%%% begins a new page, whereas here, the list is a section that
+%%% does not require a page eject.  We do not need to set the
+%%% \leftmark and \rightmark, because the \section{} command
+%%% does that for us.
+
+\def \thebibliography #1%
+{%
+    \ifrawbibliography
+    \else
+        %% Switch to singlespace after the heading gets printed.
+        \section{References}%
+        \par
+        \removelastskip
+        \singlespace
+        \par
+        \removelastskip            % GBG Oct 1993
+        \fixmainheadingSKIP
+    \fi
+    \ifx \uuthesis@pageheaders \undefined
+    \else
+        \global \def \leftmark  {\@chapapp\ \thechapter. \uuthesis@shortchaptername}%
+        \global \def \rightmark {\S \thechapter .\the \c@section: \bibname}%
+    \fi
+    \list{[\arabic{enumi}]}%
+    {%
+        \settowidth \labelwidth {[#1]}%
+        \leftmargin = \labelwidth
+        \advance \leftmargin by \labelsep
+        \usecounter{enumi}%
+    }%
+    \def \newblock {\hskip .11em plus .33em minus -.07em}%
+    \sloppy
+    \clubpenalty = 4000
+    \widowpenalty = 4000
+    \sfcode`\. = 1000
+    \relax
+}
+
+%%% This code is adapted from the uuthesis-2016-g.sty file.
+
+\newdimen \uuchapterbib@chaptersectionspace
+\uuchapterbib@chaptersectionspace = \baselineskip
+\advance \uuchapterbib@chaptersectionspace by -6pt
+
+\FPeval {\uuchapterbib@cursection}       {0}%
+\FPeval {\uuchapterbib@cursubsection}    {0}%
+\FPeval {\uuchapterbib@cursubsubsection} {0}%
+\FPeval {\uuchapterbib@curfigure}        {0}%
+\FPeval {\uuchapterbib@curtable}         {0}%
+
+\newcounter {uuchapterbibsection}
+\newcounter {uuchapterbibsubsection}
+\newcounter {uuchapterbibsubsubsection}
+\newcounter {uuchapterbibfigure}
+\newcounter {uuchapterbibtable}
+
+%%% The following command should be run after each \begin{chapter}
+%%% command but before one starts manually adding the sections
+%%% manually.  It adds appropriate space to the table of contents and
+%%% sets its own section counter.
+
+\def \setupuuchapterbib
+{%
+    \addtocontents {toc} {\protect \vspace{\protect \uuchapterbib@chaptersectionspace} \protect }%
+    \FPeval {\uuchapterbib@cursection}       {0}%
+    \FPeval {\uuchapterbib@cursubsection}    {0}%
+    \FPeval {\uuchapterbib@cursubsubsection} {0}%
+    \FPeval {\uuchapterbib@curfigure}        {0}%
+    \FPeval {\uuchapterbib@curtable}         {0}%
+
+    %% These counters are exposed to the user to allow manual changes, if needed
+    \setcounter {uuchapterbibsection}        {0}%
+    \setcounter {uuchapterbibsubsection}     {0}%
+    \setcounter {uuchapterbibsubsubsection}  {0}%
+    \setcounter {uuchapterbibfigure}          {0}%
+    \setcounter {uuchapterbibtable}          {0}%
+
+    \ifx \uuthesis@pageheaders \undefined
+    \else
+        \global \def \leftmark  {}% clear any previous section page header
+        \global \def \rightmark {}% clear any previous chapter page header
+    \fi
+}
+
+%%% Three commands handle the generation of table-of-contents
+%%% entries for sections, subsections, and subsubsections of
+%%% PDF files of documents published elsewhere, such as journal
+%%% article.
+%%%
+%%% Each command takes two arguments: a sectional heading, and a page
+%%% number in the included PDF file.  That number is biased to the
+%%% correct page number when it is write to the \jobname.toc file.
+%%%
+%%% Here are some examples:
+%%%
+%%% \uudummysection       {Historical remarks} {1}
+%%% \uudummysubsection    {More remarks}       {2}
+%%% \uudummysubsubsection {Even more remarks}  {2}
+
+\def \uudummysection #1#2%
+{%
+    \FPeval {\uuchapterbib@PageNum}{clip(\thepage+#2)}
+    \stepcounter {uuchapterbibsection}
+    \addtocontents {toc} {%
+                              \protect
+                              \contentsline {section}%
+                                            {%
+                                                \protect \numberline
+                                                {\thechapter.\arabic{uuchapterbibsection}}%
+                                                #1%
+                                            }%
+                                            {%
+                                                \uuchapterbib@PageNum
+                                            }%
+                              %%% TO DO: Why is this final \protect here??
+                             \protect
+                         }
+    \setcounter {uuchapterbibsubsection}    {0}
+    \setcounter {uuchapterbibsubsubsection} {0}
+}
+
+\def \uudummysubsection #1#2%
+{%
+    \FPeval {\uuchapterbib@PageNum}  {clip(\thepage+#2)}%
+    \stepcounter {uuchapterbibsubsection}%
+    \addtocontents {toc} {%
+                             \protect
+                             \contentsline {subsection}%
+                                           {%
+                                               \protect \numberline
+                                               {\thechapter.\arabic{uuchapterbibsection}.\arabic{uuchapterbibsubsection}}%
+                                               #1%
+                                            }%
+                                            {%
+                                               \uuchapterbib@PageNum
+                                            }%
+                             %%% TO DO: Why is this final \protect here??
+                            \protect
+                         }
+    \setcounter {uuchapterbibsubsubsection} {0}
+}
+
+\def \uudummysubsubsection#1#2%
+{%
+    \FPeval {\uuchapterbib@PageNum} {clip(\thepage+#2)}%
+    \stepcounter {uuchapterbibsubsubsection}%
+    \FPeval {\uuchapterbib@cursubsubsection}{clip(1+\uuchapterbib@cursubsubsection)}%
+    \addtocontents {toc} {%
+                             \protect
+                             \contentsline {subsubsection}
+                                           {%
+                                               \protect \numberline
+                                               {\thechapter.\arabic{uuchapterbibsection}.\arabic{uuchapterbibsubsection}.\arabic{uuchapterbibsubsubsection}}%
+                                               #1%
+                                           }%
+                                           {%
+                                               \uuchapterbib@PageNum
+                                           }%
+                                           \protect
+                         }
+}
+
+\def \uudummyfigure#1#2%
+{%
+    \FPeval {\uuchapterbib@PageNum} {clip(\thepage+#2)}%
+    \stepcounter {uuchapterbibfigure}%
+    \FPeval {\uuchapterbib@curfigure}{clip(1+\uuchapterbib@curfigure)}%
+    \addtocontents {lof} {%
+                             \protect
+                             \contentsline {figure}
+                                           {%
+                                               \protect \numberline
+                                               {\thechapter.\arabic{uuchapterbibfigure}}%
+                                               #1%
+                                           }%
+                                           {%
+                                               \uuchapterbib@PageNum
+                                           }%
+                                           \protect
+                         }
+}
+
+\def \uudummytable#1#2%
+{%
+    \FPeval {\uuchapterbib@PageNum} {clip(\thepage+#2)}%
+    \stepcounter {uuchapterbibtable}%
+    \FPeval {\uuchapterbib@curtable}{clip(1+\uuchapterbib@curtable)}%
+    \addtocontents {lot} {%
+                             \protect
+                             \contentsline {table}
+                                           {%
+                                               \protect \numberline
+                                               {\thechapter.\arabic{uuchapterbibtable}}%
+                                               #1%
+                                           }%
+                                           {%
+                                               \uuchapterbib@PageNum
+                                           }%
+                                           \protect
+                         }
+}
