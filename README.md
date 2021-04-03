@@ -5,7 +5,11 @@ corrects some issues with title spacing and is configured
 to use the IEEE TVCG style for figure/table references and
 the bibliography. Tell the thesis editor you are using
 the IEEE TVCG style when you submit if you don't modify that
-part of the template.
+part of the template. **There are still other rules about layout
+and structure required by the thesis office this template
+doesn't/can't enforce**. See the [Thesis handbook](https://gradschool.utah.edu/thesis/handbook/) for information
+about figure placement, reference ordering, title lengths,
+etc.
 
 You'll want to fill in your committee, department info and
 so on in the dissertation.tex (comes after the title).
