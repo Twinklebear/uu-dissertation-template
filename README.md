@@ -10,6 +10,11 @@ and structure required by the thesis office this template
 doesn't/can't enforce**. See the [Thesis handbook](https://gradschool.utah.edu/thesis/handbook/) for information
 about figure placement, reference ordering, title lengths,
 etc.
+To simplify getting your dissertatio through the thesis office,
+I **strongly** recommend you just put all the figures at the end
+of each chapter. You can send to your committee for review with the
+figures inline, but for the final version it's much easier to just
+put them all at the end of each chapter.
 
 You'll want to fill in your committee, department info and
 so on in the dissertation.tex (comes after the title).

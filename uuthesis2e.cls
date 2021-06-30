@@ -1131,8 +1131,10 @@
 \@fpsep 10pt plus 2fil
 \@fpbot 0pt plus 1fil
 
-% Figures are numbered by chapters.
+% Figures, Algorithms and Listings are numbered by chapters.
 \newcounter{figure}[chapter]
+\newcounter{algorithm}[chapter]
+\newcounter{listing}[chapter]
 
 %
 % Default float placement option should be a page of floats
